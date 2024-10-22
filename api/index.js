@@ -78,6 +78,10 @@ app.get('/profile', (req,res) => {
     } else {
       res.json(null);
     }
+});
+
+app.post('/api/logout', (req,res) => {
+    res.cookie('token', '').json(true);
   });
 
 
