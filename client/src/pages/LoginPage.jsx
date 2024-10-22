@@ -10,25 +10,25 @@ export default function LoginPage(){
     const [redirect, setRedirect] = useState(false);
     const {setUser} = useContext(UserContext);
     
-    // async function loginUser(ev){
-    //     ev.preventDefault();
+    async function loginUser(ev){
+        ev.preventDefault();
 
-    //     try{
-    //         const {data} = await axios.post('/login', {
-    //             email,
-    //             password, 
-    //         });
-    //         setUser(data);
-    //         alert('Login successful.');
-    //         setRedirect(true);
-    //     } catch (error){
-    //         alert('Login failed.');
-    //     }
-    // }
+        try{
+            const {data} = await axios.post('/login', {
+                email,
+                password, 
+            });
+            setUser(data);
+            alert('Login successful.');
+            setRedirect(true);
+        } catch (error){
+            alert('Login failed.');
+        }
+    }
 
-    // if(redirect){
-    //     return <Navigate to={'/'} />
-    // }
+    if(redirect){
+        return <Navigate to={'/'} />
+    }
 
     return (
         <div className="flex items-center justify-around mt-4 grow">
