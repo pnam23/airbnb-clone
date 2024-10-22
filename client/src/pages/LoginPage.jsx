@@ -8,39 +8,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [redirect, setRedirect] = useState(false);
   const {setUser} = useContext(UserContext);
-//   async function handleLoginSubmit(ev) {
-//     ev.preventDefault();
-//     try {
-//       const {data} = await axios.post('/login', {email,password});
-//       setUser(data);
-//       alert('Login successful');
-//       setRedirect(true);
-//     } catch (e) {
-//       alert('Login failed');
-//     }
-//   }
-
-async function handleLoginSubmit(ev) {
+  async function handleLoginSubmit(ev) {
     ev.preventDefault();
-
-    // Reset input fields if necessary
-    // setEmail(''); // Uncomment if you want to clear email input
-    // setPassword(''); // Uncomment if you want to clear password input
-
     try {
-        const { data } = await axios.post('/login', { email, password });
-        setUser(data);
-        alert('Login successful');
-        setRedirect(true);
-    } catch (error) {
-        // Log the error for debugging
-        console.error('Login error:', error);
-
-        // Check if the error response has a message to show
-        const errorMessage = error.response?.data || 'Login failed';
-        alert(errorMessage);  // Display the specific error message
+      const {data} = await axios.post('/login', {email,password});
+      setUser(data);
+      alert('Login successful');
+      setRedirect(true);
+    } catch (e) {
+      alert('Login failed');
     }
-}
+  }
 
 
   if (redirect) {
