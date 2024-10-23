@@ -4,6 +4,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const imgDownload = require('image-downloader');
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const User = require('./models/User');
 
 
@@ -18,6 +22,9 @@ mongoose.connect(process.env.MONGO_URL);
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
 app.use(cors({
     credentials: true,
     origin: 'http://localhost:5173',
@@ -84,5 +91,42 @@ app.post('/logout', (req,res) => {
     res.cookie('token', '').json(true);
   });
 
+
+app.post('/upload-by-link', async (req, res) => {
+    const { link } = req.body;
+    if (!link.startsWith('http://') && !link.startsWith('https://')) {
+        return res.status(400).json({ error: 'Invalid URL. Only http and https are supported.' });
+    }
+    const newName = 'pic' + Date.now() + '.jpg';
+    try {
+        await imgDownload.image({
+            url: link,
+            dest: __dirname + '/uploads/' + newName,
+        });
+        res.json(newName);
+    } catch (err) {
+        res.status(500).json({ error: 'Image download failed' });
+    }
+});
+
+const photosMiddleware = multer({dest:'uploads/'});
+app.post('/upload', photosMiddleware.array('photos', 100) ,(req, res) => {
+    const uploadFiles = [];
+    
+    req.files.forEach((file) => {
+        const { path: tempPath, originalname } = file; 
+        const ext = path.extname(originalname);  
+        const newPath = tempPath + ext;
+        try {
+            fs.renameSync(tempPath, newPath);
+            const fileName = path.basename(newPath);  
+            uploadFiles.push(fileName);
+        } catch (err) {
+            console.error('Error renaming file:', err);
+            return res.status(500).json({ error: 'File renaming failed' });
+        }
+    });
+    res.json(uploadFiles);
+});
 
 app.listen(4000);

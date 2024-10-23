@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../UserContext";
 import { Link, Navigate, useParams } from "react-router-dom";
 import axios from "axios";
-// import PlacesPage from "./PlacesPage";
+import PlacesPage from "./PlacesPage";
 
 export default function AccountPage() {
     const {user, ready, setUser} = useContext(UserContext);
@@ -71,9 +71,9 @@ export default function AccountPage() {
                 </div>
 
             )}
-            {/* {subpage === 'places' && (
+            {subpage === 'places' && (
                 <PlacesPage />
-            )} */}
+            )}
         </div>
     );
 };
