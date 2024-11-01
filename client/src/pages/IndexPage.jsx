@@ -21,7 +21,7 @@ export default function IndexPage(){
                                 <img className="object-cover rounded-2xl aspect-square" src={'http://localhost:4000/uploads/' + place.photos?.[0]} />
                             )}
                         </div>
-                        <h3 className="font-bold ">{place.address}</h3>
+                        <h3 className="font-bold ">Apartment in {place.address}</h3>
                         <h2 className="text-sm text-gray-500 ">{place.title}</h2>
                         <div className="mt-1">
                             <span className="font-bold">${place.price}</span> per night

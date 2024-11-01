@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const User = require('./models/User');
 const Place = require('./models/Place');
+const Booking = require('./models/Booking');
 
 
 require('dotenv').config();
@@ -36,6 +37,15 @@ app.use(cors({
 app.get('/test', (req, res) => {
     res.json('test ok');
 });
+
+function getUserDataFromReq(req) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      resolve(userData);
+    });
+  })
+};
 
 app.post('/register', async (req,res) => {
     
@@ -130,23 +140,6 @@ app.post('/upload', photosMiddleware.array('photos', 100) ,(req, res) => {
     res.json(uploadFiles);
 });
 
-// app.post('/places', async (req, res) => {
-//   const {token} = req.cookies;
-//   const {
-//     title, address, addedPhotos, description,
-//     perks, extraInfo, checkIn, checkOut, maxGuests, price,
-//   } = req.body;
-//   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-//     if (err) throw err;
-//     const placeDoc = await Place.create({
-//       owner:userData.id,
-//       title,address,photos:addedPhotos,description,
-//       perks,extraInfo,checkIn,checkOut,maxGuests, price,
-//     });
-//     res.json(placeDoc);
-//   });
-// });
-
 app.post('/places', async (req, res) => {
     const {
       title,
@@ -225,6 +218,28 @@ app.put('/places', async (req, res) => {
 
 app.get('/places', async (req, res) => {
   res.json(await Place.find())
-})
+});
+
+app.post('/bookings', async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  const {
+    place, checkIn, checkOut, numberOfGuests, name, phone, price
+  } = req.body;
+  Booking.create({
+    place, checkIn, checkOut, numberOfGuests, name, phone, price,
+    user: userData.id
+  }).then((doc) => {
+    res.json(doc);
+  }).catch((err) => {
+    throw err;
+  });
+});
+
+
+
+app.get('/bookings', async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  res.json(await Booking.find({user:userData.id}).populate('place'))
+});
 
 app.listen(4000);
